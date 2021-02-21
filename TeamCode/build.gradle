@@ -15,6 +15,9 @@
 apply from: '../build.common.gradle'
 apply from: '../build.dependencies.gradle'
 
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
 dependencies {
     implementation project(':FtcRobotController')
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
@@ -22,4 +25,8 @@ dependencies {
     implementation 'org.apache.commons:commons-math3:3.6.1'
 
     implementation 'com.acmerobotics.roadrunner:core:0.5.3'
+
+    implementation 'com.arcrobotics:ftclib:1.1.6'
+    // the following is optional if you want vision
+    implementation 'com.arcrobotics.ftclib:vision:1.1.0'
 }
