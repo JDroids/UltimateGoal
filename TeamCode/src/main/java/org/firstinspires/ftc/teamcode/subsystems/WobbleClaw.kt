@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.robotcore.external.Telemetry
 
-class WobbleClaw(hardwareMap: HardwareMap, private val telemetry: Telemetry) : SubsystemBase() {
+class WobbleClaw(hardwareMap: HardwareMap, private val telemetry: Telemetry, private val reset: Boolean=true) : SubsystemBase() {
     private val claw by lazy {hardwareMap.get(Servo::class.java, "wobbleClaw")}
     private val pivot by lazy {hardwareMap.get(DcMotorEx::class.java, "wobblePivot")}
     private var firstTime = true
@@ -20,7 +20,11 @@ class WobbleClaw(hardwareMap: HardwareMap, private val telemetry: Telemetry) : S
             pivot.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
             pivot.targetPositionTolerance = 10
-            resetEncoder()
+
+            if (reset) {
+                resetEncoder()
+            }
+
             claw.position = 0.0
 
             firstTime = false
@@ -39,6 +43,7 @@ class WobbleClaw(hardwareMap: HardwareMap, private val telemetry: Telemetry) : S
 
     enum class PivotPosition(val targetPosition: Int, val power: Double) {
         UP(0, 1.0),
+        HALF_UP(90, 1.0),
         DOWN(180, 0.6)
     }
 

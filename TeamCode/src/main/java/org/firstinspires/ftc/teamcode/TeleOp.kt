@@ -16,25 +16,24 @@ class TeleOp : CommandOpMode() {
     lateinit var mecanumDrive: SampleMecanumDrive
 
     override fun initialize() {
-        val wobbleClaw = WobbleClaw(hardwareMap, telemetry)
+        val wobbleClaw = WobbleClaw(hardwareMap, telemetry, false)
         mecanumDrive = SampleMecanumDrive(hardwareMap)
 
         val driverGamepad = GamepadEx(gamepad1)
 
         val gamepadButtonA = GamepadButton(driverGamepad, GamepadKeys.Button.A)
         val gamepadButtonB = GamepadButton(driverGamepad, GamepadKeys.Button.B)
-        val gamepadButtonY = GamepadButton(driverGamepad, GamepadKeys.Button.Y)
 
-        val gamepadButtonLeftBumper = GamepadButton(driverGamepad, GamepadKeys.Button.LEFT_BUMPER)
-        val gamepadButtonRightBumper = GamepadButton(driverGamepad, GamepadKeys.Button.RIGHT_BUMPER)
+        val gamepadButtonUp = GamepadButton(driverGamepad, GamepadKeys.Button.DPAD_UP)
+        val gamepadButtonDown = GamepadButton(driverGamepad, GamepadKeys.Button.DPAD_DOWN)
+        val gamepadButtonRight = GamepadButton(driverGamepad, GamepadKeys.Button.DPAD_RIGHT)
 
         gamepadButtonA.whenPressed( wobbleClaw::open )
         gamepadButtonB.whenPressed( wobbleClaw::close )
-        gamepadButtonY.whenPressed( wobbleClaw::resetEncoder )
 
-        gamepadButtonLeftBumper.whenPressed(SetWobblePivotPosition(wobbleClaw, WobbleClaw.PivotPosition.UP))
-
-        gamepadButtonRightBumper.whenPressed(SetWobblePivotPosition(wobbleClaw, WobbleClaw.PivotPosition.DOWN))
+        gamepadButtonUp.whenPressed(SetWobblePivotPosition(wobbleClaw, WobbleClaw.PivotPosition.UP))
+        gamepadButtonRight.whenPressed(SetWobblePivotPosition(wobbleClaw, WobbleClaw.PivotPosition.HALF_UP))
+        gamepadButtonDown.whenPressed(SetWobblePivotPosition(wobbleClaw, WobbleClaw.PivotPosition.DOWN))
     }
 
     override fun run() {

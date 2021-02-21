@@ -30,9 +30,10 @@ class DoubleWobbleAuto : CommandOpMode() {
         detector = UGRectDetector(hardwareMap)
         detector.init()
 
-        detector.setTopRectangle(0.50, 0.12)
-        detector.setBottomRectangle(0.55, 0.12)
-        detector.setRectangleSize(30, 10)
+        detector.setTopRectangle(0.43, 0.14)
+        detector.setBottomRectangle(0.48, 0.14)
+        detector.setRectangleSize(20, 10)
+        detector.setThreshold(25)
 
         while (!isStarted && !isStopRequested) {
             stackHeight = detector.stack

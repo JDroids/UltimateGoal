@@ -28,14 +28,17 @@ class SingleWobbleAuto : CommandOpMode() {
         detector = UGRectDetector(hardwareMap)
         detector.init()
 
-        detector.setTopRectangle(0.50, 0.12)
-        detector.setBottomRectangle(0.55, 0.12)
-        detector.setRectangleSize(30, 10)
+        detector.setTopRectangle(0.43, 0.14)
+        detector.setBottomRectangle(0.48, 0.14)
+        detector.setRectangleSize(20, 10)
+        detector.setThreshold(25)
 
         while (!isStarted && !isStopRequested) {
             stackHeight = detector.stack
 
             telemetry.addData("Stack Height", stackHeight)
+            telemetry.addData("Top Average", detector.topAverage)
+            telemetry.addData("Bottom Average", detector.bottomAverage)
             telemetry.update()
         }
 
@@ -72,6 +75,13 @@ class SingleWobbleAuto : CommandOpMode() {
                 wobbleClaw.instant { wobbleClaw.open() },
 
                 // Park
+
+                FollowTrajectory(mecanumDrive) {
+                    mecanumDrive.trajectoryBuilder()
+                            .back(8.0)
+                },
+
+                SetWobblePivotPosition(wobbleClaw, WobbleClaw.PivotPosition.UP),
 
                 FollowTrajectory(mecanumDrive) {
                     mecanumDrive.trajectoryBuilder(true)
