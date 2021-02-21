@@ -19,6 +19,7 @@ class WobbleClaw(hardwareMap: HardwareMap, private val telemetry: Telemetry) : S
         if (firstTime) {
             pivot.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
+            pivot.targetPositionTolerance = 10
             resetEncoder()
             claw.position = 0.0
 
@@ -36,14 +37,14 @@ class WobbleClaw(hardwareMap: HardwareMap, private val telemetry: Telemetry) : S
         claw.position = 0.5
     }
 
-    fun up() {
-        pivot.targetPosition = 0
-        pivot.power = 1.0
+    enum class PivotPosition(val targetPosition: Int, val power: Double) {
+        UP(0, 1.0),
+        DOWN(180, 0.6)
     }
 
-    fun down() {
-        pivot.targetPosition = 180
-        pivot.power = 0.6
+    fun setPivot(position: PivotPosition) {
+        pivot.targetPosition = position.targetPosition
+        pivot.power = position.power
     }
 
     fun resetEncoder() {
@@ -51,4 +52,7 @@ class WobbleClaw(hardwareMap: HardwareMap, private val telemetry: Telemetry) : S
         pivot.targetPosition = 0
         pivot.mode = DcMotor.RunMode.RUN_TO_POSITION
     }
+
+    fun isBusy() = pivot.isBusy
 }
+

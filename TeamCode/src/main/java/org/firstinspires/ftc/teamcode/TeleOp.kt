@@ -7,6 +7,7 @@ import com.arcrobotics.ftclib.command.button.GamepadButton
 import com.arcrobotics.ftclib.gamepad.GamepadEx
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import org.firstinspires.ftc.teamcode.command.SetWobblePivotPosition
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive
 import org.firstinspires.ftc.teamcode.subsystems.WobbleClaw
 
@@ -31,8 +32,9 @@ class TeleOp : CommandOpMode() {
         gamepadButtonB.whenPressed( wobbleClaw::close )
         gamepadButtonY.whenPressed( wobbleClaw::resetEncoder )
 
-        gamepadButtonLeftBumper.whenPressed( wobbleClaw::up )
-        gamepadButtonRightBumper.whenPressed( wobbleClaw::down )
+        gamepadButtonLeftBumper.whenPressed(SetWobblePivotPosition(wobbleClaw, WobbleClaw.PivotPosition.UP))
+
+        gamepadButtonRightBumper.whenPressed(SetWobblePivotPosition(wobbleClaw, WobbleClaw.PivotPosition.DOWN))
     }
 
     override fun run() {

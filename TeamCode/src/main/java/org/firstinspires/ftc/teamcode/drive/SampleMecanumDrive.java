@@ -25,6 +25,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationCon
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.acmerobotics.roadrunner.util.NanoClock;
+import com.arcrobotics.ftclib.command.Subsystem;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -59,7 +60,7 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  * Simple mecanum drive hardware implementation for REV hardware.
  */
 @Config
-public class SampleMecanumDrive extends MecanumDrive {
+public class SampleMecanumDrive extends MecanumDrive implements Subsystem {
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0);
 
@@ -102,6 +103,8 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     public SampleMecanumDrive(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
+
+        register();
 
         dashboard = FtcDashboard.getInstance();
         dashboard.setTelemetryTransmissionInterval(25);
@@ -175,6 +178,14 @@ public class SampleMecanumDrive extends MecanumDrive {
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
     }
 
+    public TrajectoryBuilder trajectoryBuilder() {
+        return new TrajectoryBuilder(getPoseEstimate(), velConstraint, accelConstraint);
+    }
+
+    public TrajectoryBuilder trajectoryBuilder(boolean reversed) {
+        return new TrajectoryBuilder(getPoseEstimate(), reversed, velConstraint, accelConstraint);
+    }
+
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
         return new TrajectoryBuilder(startPose, velConstraint, accelConstraint);
     }
@@ -205,6 +216,28 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     public void turn(double angle) {
         turnAsync(angle);
+        waitForIdle();
+    }
+
+
+    public void turnToAsync(double angle) {
+        double heading = getPoseEstimate().getHeading();
+
+        lastPoseOnTurn = getPoseEstimate();
+
+        turnProfile = MotionProfileGenerator.generateSimpleMotionProfile(
+                new MotionState(heading, 0, 0, 0),
+                new MotionState(angle, 0, 0, 0),
+                MAX_ANG_VEL,
+                MAX_ANG_ACCEL
+        );
+
+        turnStart = clock.seconds();
+        mode = Mode.TURN;
+    }
+
+    public void turnTo(double angle) {
+        turnToAsync(angle);
         waitForIdle();
     }
 
@@ -422,5 +455,10 @@ public class SampleMecanumDrive extends MecanumDrive {
         // flat on a surface
 
         return (double) imu.getAngularVelocity().zRotationRate;
+    }
+
+    @Override
+    public void periodic() {
+        update();
     }
 }

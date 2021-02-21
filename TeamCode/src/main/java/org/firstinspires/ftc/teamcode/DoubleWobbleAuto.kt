@@ -11,9 +11,11 @@ import org.firstinspires.ftc.teamcode.command.FollowTrajectory
 import org.firstinspires.ftc.teamcode.command.SetWobblePivotPosition
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive
 import org.firstinspires.ftc.teamcode.subsystems.WobbleClaw
+import java.util.function.BooleanSupplier
+import java.util.function.Consumer
 
 @Autonomous(group = "1")
-class SingleWobbleAuto : CommandOpMode() {
+class DoubleWobbleAuto : CommandOpMode() {
     lateinit var mecanumDrive: SampleMecanumDrive
     lateinit var detector: UGRectDetector
     lateinit var stackHeight: UGRectDetector.Stack
@@ -71,12 +73,32 @@ class SingleWobbleAuto : CommandOpMode() {
                 SetWobblePivotPosition(wobbleClaw, WobbleClaw.PivotPosition.DOWN),
                 wobbleClaw.instant { wobbleClaw.open() },
 
-                // Park
+                // Grab Second Wobble
 
                 FollowTrajectory(mecanumDrive) {
-                    mecanumDrive.trajectoryBuilder(true)
-                            .splineTo(Vector2d(6.0, -36.0), Math.toRadians(180.0))
-                }
-        ))
+                    mecanumDrive.trajectoryBuilder()
+                            .back(22.0)
+                },
+
+                FunctionalCommand(
+                        { mecanumDrive.turnToAsync(Math.toRadians(180.0)) }.runnable,
+                        {}.runnable,
+                        Consumer<Boolean> {  },
+                        BooleanSupplier { mecanumDrive.isBusy },
+                        mecanumDrive),
+
+                FollowTrajectory(mecanumDrive) {
+                    mecanumDrive.trajectoryBuilder()
+                            .splineTo(Vector2d(-30.0, -22.0), Math.toRadians(180.0))
+                },
+
+                FollowTrajectory(mecanumDrive) {
+                    mecanumDrive.trajectoryBuilder()
+                            .forward(3.0)
+                },
+
+                wobbleClaw.instant { wobbleClaw.close() },
+                SetWobblePivotPosition(wobbleClaw, WobbleClaw.PivotPosition.UP)
+            ))
     }
 }
