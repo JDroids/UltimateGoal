@@ -98,9 +98,15 @@ class DoubleWobbleAuto : CommandOpMode() {
                             .splineTo(Vector2d(-30.0, -22.0), Math.toRadians(180.0))
                 },
 
-                FollowTrajectory(mecanumDrive) {
-                    mecanumDrive.trajectoryBuilder()
-                            .forward(4.0)
+                when(stackHeight) {
+                    UGRectDetector.Stack.FOUR -> FollowTrajectory(mecanumDrive) {
+                        mecanumDrive.trajectoryBuilder()
+                                .forward(6.0)
+                    }
+                    else -> FollowTrajectory(mecanumDrive) {
+                        mecanumDrive.trajectoryBuilder()
+                                .forward(4.0)
+                    }
                 },
 
                 wobbleClaw.instant { wobbleClaw.close() },
