@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import org.firstinspires.ftc.teamcode.command.FollowTrajectory
 import org.firstinspires.ftc.teamcode.command.SetWobblePivotPosition
 import org.firstinspires.ftc.teamcode.command.SleepCommand
+import org.firstinspires.ftc.teamcode.command.TurnToCommand
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive
 import org.firstinspires.ftc.teamcode.subsystems.WobbleClaw
 import java.util.function.BooleanSupplier
@@ -28,8 +29,8 @@ class DoubleWobbleAuto : CommandOpMode() {
         detector = UGRectDetector(hardwareMap)
         detector.init()
 
-        detector.setTopRectangle(0.43, 0.14)
-        detector.setBottomRectangle(0.48, 0.14)
+        detector.setTopRectangle(0.48, 0.14)
+        detector.setBottomRectangle(0.53, 0.14)
         detector.setRectangleSize(20, 10)
         detector.setThreshold(25)
 
@@ -56,7 +57,7 @@ class DoubleWobbleAuto : CommandOpMode() {
                     // position A
                     UGRectDetector.Stack.ZERO -> FollowTrajectory(mecanumDrive) {
                         mecanumDrive.trajectoryBuilder()
-                                .splineTo(Vector2d(0.0, -60.0), 0.0)
+                                .splineTo(Vector2d(-4.0, -60.0), 0.0)
                     }
 
                     // position B
@@ -68,7 +69,7 @@ class DoubleWobbleAuto : CommandOpMode() {
                     // position C
                     UGRectDetector.Stack.FOUR -> FollowTrajectory(mecanumDrive) {
                         mecanumDrive.trajectoryBuilder()
-                                .splineTo(Vector2d(48.0, -60.0), 0.0)
+                                .splineTo(Vector2d(56.0, -50.0), Math.toRadians(315.0))
                     }
                 },
                 SetWobblePivotPosition(wobbleClaw, WobbleClaw.PivotPosition.DOWN),
@@ -81,12 +82,16 @@ class DoubleWobbleAuto : CommandOpMode() {
                             .back(22.0)
                 },
 
-                FunctionalCommand(
-                        { mecanumDrive.turnToAsync(Math.toRadians(180.0)) }.runnable,
-                        {}.runnable,
-                        Consumer<Boolean> { },
-                        BooleanSupplier { mecanumDrive.isBusy },
-                        mecanumDrive),
+                when (stackHeight) {
+                    UGRectDetector.Stack.ZERO -> {
+                        FollowTrajectory(mecanumDrive) {
+                            mecanumDrive.trajectoryBuilder()
+                                    .strafeLeft(10.0)
+                        }
+                    }
+                    UGRectDetector.Stack.ONE -> TurnToCommand(mecanumDrive, Math.toRadians(150.0))
+                    UGRectDetector.Stack.FOUR -> TurnToCommand(mecanumDrive, Math.toRadians(180.0))
+                },
 
                 FollowTrajectory(mecanumDrive) {
                     mecanumDrive.trajectoryBuilder()
@@ -95,11 +100,11 @@ class DoubleWobbleAuto : CommandOpMode() {
 
                 FollowTrajectory(mecanumDrive) {
                     mecanumDrive.trajectoryBuilder()
-                            .forward(6.0)
+                            .forward(4.0)
                 },
 
                 wobbleClaw.instant { wobbleClaw.close() },
-                SleepCommand(0.5),
+                SleepCommand(0.75),
                 SetWobblePivotPosition(wobbleClaw, WobbleClaw.PivotPosition.UP),
 
                 // Place second wobble goal
@@ -107,25 +112,26 @@ class DoubleWobbleAuto : CommandOpMode() {
                     mecanumDrive.trajectoryBuilder()
                             .back(24.0)
                 },
+                TurnToCommand(mecanumDrive, Math.toRadians(0.0)),
                 when (stackHeight) {
                     UGRectDetector.Stack.ZERO -> FollowTrajectory(mecanumDrive) {
                         mecanumDrive.trajectoryBuilder()
-                                .splineTo(Vector2d(12.0, -40.0), Math.toRadians(270.0))
+                                .splineTo(Vector2d(16.0, -48.0), Math.toRadians(270.0))
                     }
                     UGRectDetector.Stack.ONE -> FollowTrajectory(mecanumDrive) {
                         mecanumDrive.trajectoryBuilder()
-                                .splineTo(Vector2d(12.0, -48.0), Math.toRadians(0.0))
+                                .splineTo(Vector2d(30.0, -36.0), Math.toRadians(0.0))
                     }
                     UGRectDetector.Stack.FOUR -> FollowTrajectory(mecanumDrive) {
                         mecanumDrive.trajectoryBuilder()
-                                .splineTo(Vector2d(60.0, -40.0), Math.toRadians(270.0))
+                                .splineTo(Vector2d(48.0, -48.0), Math.toRadians(315.0))
                     }
                 },
                 SetWobblePivotPosition(wobbleClaw, WobbleClaw.PivotPosition.DOWN),
                 wobbleClaw.instant { wobbleClaw.open() },
                 FollowTrajectory(mecanumDrive) {
                     mecanumDrive.trajectoryBuilder(true)
-                            .splineTo(Vector2d(6.0, -36.0), Math.toRadians(180.0))
+                            .splineTo(Vector2d(6.0, -30.0), Math.toRadians(180.0))
                 }
 
         ))

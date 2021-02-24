@@ -28,8 +28,8 @@ class SingleWobbleAuto : CommandOpMode() {
         detector = UGRectDetector(hardwareMap)
         detector.init()
 
-        detector.setTopRectangle(0.43, 0.14)
-        detector.setBottomRectangle(0.48, 0.14)
+        detector.setTopRectangle(0.48, 0.14)
+        detector.setBottomRectangle(0.53, 0.14)
         detector.setRectangleSize(20, 10)
         detector.setThreshold(25)
 
