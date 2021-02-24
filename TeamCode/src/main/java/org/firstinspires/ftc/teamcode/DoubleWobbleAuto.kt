@@ -2,13 +2,11 @@ package org.firstinspires.ftc.teamcode
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
-import com.arcrobotics.ftclib.command.CommandOpMode
-import com.arcrobotics.ftclib.command.FunctionalCommand
-import com.arcrobotics.ftclib.command.InstantCommand
-import com.arcrobotics.ftclib.command.SequentialCommandGroup
+import com.arcrobotics.ftclib.command.*
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import org.firstinspires.ftc.teamcode.command.FollowTrajectory
 import org.firstinspires.ftc.teamcode.command.SetWobblePivotPosition
+import org.firstinspires.ftc.teamcode.command.SleepCommand
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive
 import org.firstinspires.ftc.teamcode.subsystems.WobbleClaw
 import java.util.function.BooleanSupplier
@@ -39,6 +37,8 @@ class DoubleWobbleAuto : CommandOpMode() {
             stackHeight = detector.stack
 
             telemetry.addData("Stack Height", stackHeight)
+            telemetry.addData("Top Average", detector.topAverage)
+            telemetry.addData("Bottom Average", detector.bottomAverage)
             telemetry.update()
         }
 
@@ -49,7 +49,7 @@ class DoubleWobbleAuto : CommandOpMode() {
                 // Drop Wobble Goal
                 FollowTrajectory(mecanumDrive) {
                     mecanumDrive.trajectoryBuilder()
-                            .lineToConstantHeading(Vector2d(-45.0, -57.0 ))
+                            .lineToConstantHeading(Vector2d(-45.0, -57.0))
                 },
 
                 when (stackHeight) {
@@ -84,7 +84,7 @@ class DoubleWobbleAuto : CommandOpMode() {
                 FunctionalCommand(
                         { mecanumDrive.turnToAsync(Math.toRadians(180.0)) }.runnable,
                         {}.runnable,
-                        Consumer<Boolean> {  },
+                        Consumer<Boolean> { },
                         BooleanSupplier { mecanumDrive.isBusy },
                         mecanumDrive),
 
@@ -95,11 +95,39 @@ class DoubleWobbleAuto : CommandOpMode() {
 
                 FollowTrajectory(mecanumDrive) {
                     mecanumDrive.trajectoryBuilder()
-                            .forward(3.0)
+                            .forward(6.0)
                 },
 
                 wobbleClaw.instant { wobbleClaw.close() },
-                SetWobblePivotPosition(wobbleClaw, WobbleClaw.PivotPosition.UP)
-            ))
+                SleepCommand(0.5),
+                SetWobblePivotPosition(wobbleClaw, WobbleClaw.PivotPosition.UP),
+
+                // Place second wobble goal
+                FollowTrajectory(mecanumDrive) {
+                    mecanumDrive.trajectoryBuilder()
+                            .back(24.0)
+                },
+                when (stackHeight) {
+                    UGRectDetector.Stack.ZERO -> FollowTrajectory(mecanumDrive) {
+                        mecanumDrive.trajectoryBuilder()
+                                .splineTo(Vector2d(12.0, -40.0), Math.toRadians(270.0))
+                    }
+                    UGRectDetector.Stack.ONE -> FollowTrajectory(mecanumDrive) {
+                        mecanumDrive.trajectoryBuilder()
+                                .splineTo(Vector2d(12.0, -48.0), Math.toRadians(0.0))
+                    }
+                    UGRectDetector.Stack.FOUR -> FollowTrajectory(mecanumDrive) {
+                        mecanumDrive.trajectoryBuilder()
+                                .splineTo(Vector2d(60.0, -40.0), Math.toRadians(270.0))
+                    }
+                },
+                SetWobblePivotPosition(wobbleClaw, WobbleClaw.PivotPosition.DOWN),
+                wobbleClaw.instant { wobbleClaw.open() },
+                FollowTrajectory(mecanumDrive) {
+                    mecanumDrive.trajectoryBuilder(true)
+                            .splineTo(Vector2d(6.0, -36.0), Math.toRadians(180.0))
+                }
+
+        ))
     }
 }

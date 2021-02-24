@@ -3,10 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystems
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 import com.arcrobotics.ftclib.command.SubsystemBase
-import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.DcMotorEx
-import com.qualcomm.robotcore.hardware.HardwareMap
-import com.qualcomm.robotcore.hardware.Servo
+import com.qualcomm.robotcore.hardware.*
 import org.firstinspires.ftc.robotcore.external.Telemetry
 
 class WobbleClaw(hardwareMap: HardwareMap, private val telemetry: Telemetry, private val reset: Boolean=true) : SubsystemBase() {
@@ -18,8 +15,9 @@ class WobbleClaw(hardwareMap: HardwareMap, private val telemetry: Telemetry, pri
     override fun periodic() {
         if (firstTime) {
             pivot.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+            pivot.direction = DcMotorSimple.Direction.REVERSE
 
-            pivot.targetPositionTolerance = 10
+            pivot.targetPositionTolerance = 20
 
             if (reset) {
                 resetEncoder()
@@ -43,13 +41,18 @@ class WobbleClaw(hardwareMap: HardwareMap, private val telemetry: Telemetry, pri
 
     enum class PivotPosition(val targetPosition: Int, val power: Double) {
         UP(0, 1.0),
-        HALF_UP(90, 1.0),
-        DOWN(180, 0.6)
+        HALF_UP((90*16)/20, 1.0),
+        DOWN((180*16)/20, 0.6)
     }
 
     fun setPivot(position: PivotPosition) {
         pivot.targetPosition = position.targetPosition
         pivot.power = position.power
+    }
+
+    fun pivotPower(power: Double) {
+        pivot.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+        pivot.power = power
     }
 
     fun resetEncoder() {
