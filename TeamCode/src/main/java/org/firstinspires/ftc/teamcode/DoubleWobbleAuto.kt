@@ -31,7 +31,7 @@ class DoubleWobbleAuto : CommandOpMode() {
 
         detector.setTopRectangle(0.48, 0.14)
         detector.setBottomRectangle(0.53, 0.14)
-        detector.setRectangleSize(20, 10)
+        detector.setRectangleSize(20, 5)
         detector.setThreshold(25)
 
         while (!isStarted && !isStopRequested) {
@@ -63,7 +63,7 @@ class DoubleWobbleAuto : CommandOpMode() {
                     // position B
                     UGRectDetector.Stack.ONE -> FollowTrajectory(mecanumDrive) {
                         mecanumDrive.trajectoryBuilder()
-                                .splineTo(Vector2d(24.0, -36.0), 0.0)
+                                .splineTo(Vector2d(30.0, -32.0), 0.0)
                     }
 
                     // position C
@@ -120,7 +120,7 @@ class DoubleWobbleAuto : CommandOpMode() {
                     }
                     UGRectDetector.Stack.ONE -> FollowTrajectory(mecanumDrive) {
                         mecanumDrive.trajectoryBuilder()
-                                .splineTo(Vector2d(30.0, -36.0), Math.toRadians(0.0))
+                                .splineTo(Vector2d(20.0, -36.0), Math.toRadians(0.0))
                     }
                     UGRectDetector.Stack.FOUR -> FollowTrajectory(mecanumDrive) {
                         mecanumDrive.trajectoryBuilder()

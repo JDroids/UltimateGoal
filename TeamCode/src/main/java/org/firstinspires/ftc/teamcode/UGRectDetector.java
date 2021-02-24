@@ -60,9 +60,9 @@ public class UGRectDetector {
     }
 
     public Stack getStack() {
-        if (Math.abs(ftclibPipeline.getTopAverage() - ftclibPipeline.getBottomAverage()) < ftclibPipeline.getThreshold() && (ftclibPipeline.getTopAverage() <= 105 && ftclibPipeline.getBottomAverage() <= 105)) {
+        if (Math.abs(ftclibPipeline.getTopAverage() - ftclibPipeline.getBottomAverage()) < ftclibPipeline.getThreshold() && (ftclibPipeline.getTopAverage() <= 110 && ftclibPipeline.getBottomAverage() <= 110)) {
             return Stack.FOUR;
-        } else if (Math.abs(ftclibPipeline.getTopAverage() - ftclibPipeline.getBottomAverage()) < ftclibPipeline.getThreshold() && (ftclibPipeline.getTopAverage() >= 105 && ftclibPipeline.getBottomAverage() >= 105)) {
+        } else if (Math.abs(ftclibPipeline.getTopAverage() - ftclibPipeline.getBottomAverage()) < ftclibPipeline.getThreshold() && (ftclibPipeline.getTopAverage() >= 110 && ftclibPipeline.getBottomAverage() >= 110)) {
             return Stack.ZERO;
         } else {
             return Stack.ONE;
