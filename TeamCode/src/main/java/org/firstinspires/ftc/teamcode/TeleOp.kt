@@ -8,25 +8,39 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive
+import org.firstinspires.ftc.teamcode.subsystems.Intake
 import org.firstinspires.ftc.teamcode.subsystems.WobbleClaw
 
 @TeleOp(group = "1")
 class TeleOp : CommandOpMode() {
     lateinit var mecanumDrive: SampleMecanumDrive
     lateinit var wobbleClaw: WobbleClaw
+    lateinit var intake: Intake
 
     override fun initialize() {
-        wobbleClaw = WobbleClaw(hardwareMap, telemetry, false)
         mecanumDrive = SampleMecanumDrive(hardwareMap)
+        wobbleClaw = WobbleClaw(hardwareMap, telemetry, false)
+        intake = Intake(hardwareMap)
 
         val driverGamepad = GamepadEx(gamepad1)
 
+
         val gamepadButtonA = GamepadButton(driverGamepad, GamepadKeys.Button.A)
         val gamepadButtonB = GamepadButton(driverGamepad, GamepadKeys.Button.B)
-
         gamepadButtonA.whenPressed( wobbleClaw::open )
         gamepadButtonB.whenPressed( wobbleClaw::close )
-}
+
+        val gamepadButtonLeftBumper = GamepadButton(driverGamepad, GamepadKeys.Button.LEFT_BUMPER)
+        val gamepadButtonRightBumper = GamepadButton(driverGamepad, GamepadKeys.Button.RIGHT_BUMPER)
+
+        gamepadButtonLeftBumper
+                .whenPressed(intake::outtake)
+                .whenReleased(intake::stop)
+
+        gamepadButtonRightBumper
+                .whenPressed(intake::intake)
+                .whenReleased(intake::stop)
+    }
 
     override fun run() {
         super.run()
@@ -44,6 +58,8 @@ class TeleOp : CommandOpMode() {
                     gamepad1.right_trigger.toDouble() * 0.4
                 }
         )
+
+
 
 
         telemetry.update()
