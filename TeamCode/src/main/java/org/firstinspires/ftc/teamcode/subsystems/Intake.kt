@@ -11,13 +11,7 @@ class Intake(hardwareMap: HardwareMap) : SubsystemBase() {
 
     private var firstTime = true
 
-    enum class State(val power: Double) {
-        INTAKE(1.0),
-        OUTTAKE(-1.0),
-        STOP(0.0)
-    }
-
-    var state = State.STOP
+    private var power = 0.0
 
     override fun periodic() {
         if (firstTime) {
@@ -26,6 +20,18 @@ class Intake(hardwareMap: HardwareMap) : SubsystemBase() {
             firstTime = false
         }
 
-        intakeMotor.power = state.power
+        intakeMotor.power = power
+    }
+
+    fun intake() {
+        power = 1.0
+    }
+
+    fun outtake() {
+        power = -1.0
+    }
+
+    fun stop() {
+        power = 0.0
     }
 }
