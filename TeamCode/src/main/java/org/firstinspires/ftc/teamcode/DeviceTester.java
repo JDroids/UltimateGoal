@@ -7,16 +7,19 @@ import com.acmerobotics.dashboard.config.variable.CustomVariable;
 import com.qualcomm.hardware.lynx.LynxDcMotorController;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorImpl;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 import java.util.List;
 import java.util.Set;
 
+@TeleOp
 public class DeviceTester extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
@@ -31,7 +34,12 @@ public class DeviceTester extends LinearOpMode {
                 e.printStackTrace();
                 throw new RuntimeException("Failed to set up configuration variables");
             }
+
+            FtcDashboard.getInstance().getTelemetry().addData("foobar", "foo");
         }
+
+        FtcDashboard.getInstance().getTelemetry().update();
+        waitForStart();
 
         //noinspection StatementWithEmptyBody
         while (opModeIsActive()) ; // noop
@@ -47,7 +55,7 @@ public class DeviceTester extends LinearOpMode {
 
         for (int port = 0; port < 4; port++) {
             DcMotor motor = new DcMotorImpl(motorController, port);
-            
+
             motorVar.putVariable(getDeviceName(port, motor), new BasicVariable<>(new ValueProvider<Double>() {
                 @Override
                 public Double get() {
@@ -59,8 +67,10 @@ public class DeviceTester extends LinearOpMode {
                     motor.setPower(value);
                 }
             }));
+
         }
         hubVar.putVariable("Motors", motorVar);
+
         FtcDashboard.getInstance().updateConfig();
     }
 
