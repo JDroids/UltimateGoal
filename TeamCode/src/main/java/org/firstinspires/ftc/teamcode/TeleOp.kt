@@ -3,12 +3,15 @@ package org.firstinspires.ftc.teamcode
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.arcrobotics.ftclib.command.CommandOpMode
+import com.arcrobotics.ftclib.command.button.Button
 import com.arcrobotics.ftclib.command.button.GamepadButton
+import com.arcrobotics.ftclib.command.button.Trigger
 import com.arcrobotics.ftclib.gamepad.GamepadEx
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive
 import org.firstinspires.ftc.teamcode.subsystems.Intake
+import org.firstinspires.ftc.teamcode.subsystems.Shooter
 import org.firstinspires.ftc.teamcode.subsystems.WobbleClaw
 
 @TeleOp(group = "1")
@@ -16,11 +19,14 @@ class TeleOp : CommandOpMode() {
     lateinit var mecanumDrive: SampleMecanumDrive
     lateinit var wobbleClaw: WobbleClaw
     lateinit var intake: Intake
+    lateinit var shooter: Shooter
+
 
     override fun initialize() {
         mecanumDrive = SampleMecanumDrive(hardwareMap)
         wobbleClaw = WobbleClaw(hardwareMap, telemetry, false)
         intake = Intake(hardwareMap)
+        shooter = Shooter(hardwareMap)
 
         val driverGamepad = GamepadEx(gamepad1)
 
@@ -40,6 +46,13 @@ class TeleOp : CommandOpMode() {
         gamepadButtonRightBumper
                 .whenPressed(intake::intake)
                 .whenReleased(intake::stop)
+
+        val gamepadTriggerLeft = Trigger { gamepad1.left_trigger > 0.5 }
+                .whenActive(shooter::shoot)
+                .whenInactive(shooter::stop)
+
+        val gamepadTriggerRight = Trigger { gamepad1.right_trigger > 0.5 }
+                .whenActive(shooter::pushRing)
     }
 
     override fun run() {
@@ -50,17 +63,14 @@ class TeleOp : CommandOpMode() {
                         Vector2d(-gamepad1.left_stick_y.toDouble(),
                                 -gamepad1.left_stick_x.toDouble()),
                         -gamepad1.right_stick_x.toDouble()))
+
         wobbleClaw.pivotPower(
-                if (gamepad1.left_trigger > 0.01) {
-                    -gamepad1.left_trigger.toDouble()
-                }
-                else {
-                    gamepad1.right_trigger.toDouble() * 0.4
+                when {
+                    gamepad1.dpad_up -> -1.0
+                    gamepad1.dpad_down -> 0.4
+                    else -> 0.0
                 }
         )
-
-
-
 
         telemetry.update()
     }
