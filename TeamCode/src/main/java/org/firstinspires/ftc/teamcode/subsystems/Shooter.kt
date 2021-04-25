@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems
 
 import com.arcrobotics.ftclib.command.SubsystemBase
-import com.qualcomm.robotcore.hardware.DcMotorEx
-import com.qualcomm.robotcore.hardware.HardwareMap
-import com.qualcomm.robotcore.hardware.Servo
+import com.qualcomm.robotcore.hardware.*
 import com.qualcomm.robotcore.util.ElapsedTime
 
 class Shooter(hardwareMap: HardwareMap) : SubsystemBase() {
@@ -35,7 +33,7 @@ class Shooter(hardwareMap: HardwareMap) : SubsystemBase() {
             IndexerState.PUSH -> {
                 indexerServo.position = 0.9
 
-                if (timer.milliseconds() > 300) {
+                if (timer.milliseconds() > 400) {
                     indexerState = IndexerState.RETRACT
                 }
             }
@@ -43,7 +41,7 @@ class Shooter(hardwareMap: HardwareMap) : SubsystemBase() {
     }
 
     fun shoot() {
-        velocity = (5500 / 60.0) * 28
+        velocity = (targetRPM / 60.0) * 28
     }
 
     fun stop() {
@@ -54,4 +52,6 @@ class Shooter(hardwareMap: HardwareMap) : SubsystemBase() {
         indexerState = IndexerState.PUSH
         timer.reset()
     }
+
+    var targetRPM = 5000
 }
