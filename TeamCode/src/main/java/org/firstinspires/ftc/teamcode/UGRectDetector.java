@@ -38,8 +38,8 @@ public class UGRectDetector {
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                camera.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
-                camera.setFlashlightEnabled(true);
+                camera.startStreaming(320, 240, OpenCvCameraRotation.SIDEWAYS_LEFT);
+                // camera.setFlashlightEnabled(true);
             }
         });
     }

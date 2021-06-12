@@ -3,12 +3,14 @@ package org.firstinspires.ftc.teamcode
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.arcrobotics.ftclib.command.CommandOpMode
+import com.arcrobotics.ftclib.command.CommandScheduler
 import com.arcrobotics.ftclib.command.button.Button
 import com.arcrobotics.ftclib.command.button.GamepadButton
 import com.arcrobotics.ftclib.command.button.Trigger
 import com.arcrobotics.ftclib.gamepad.GamepadEx
 import com.arcrobotics.ftclib.gamepad.GamepadKeys
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import org.firstinspires.ftc.teamcode.command.ShootCommand
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive
 import org.firstinspires.ftc.teamcode.subsystems.Intake
 import org.firstinspires.ftc.teamcode.subsystems.Shooter
@@ -48,12 +50,11 @@ class TeleOp : CommandOpMode() {
                 .whenReleased(intake::stop)
 
         val gamepadTriggerLeft = Trigger { gamepad1.left_trigger > 0.5 }
-                .whenActive(shooter::shoot)
-                .whenInactive(shooter::stop)
-
-        val gamepadTriggerRight = Trigger { gamepad1.right_trigger > 0.5 }
                 .whenActive(shooter::pushRing)
     }
+
+    private val shootCommand by lazy { ShootCommand(shooter) }
+
 
     override fun run() {
         super.run()
@@ -71,6 +72,15 @@ class TeleOp : CommandOpMode() {
                     else -> 0.0
                 }
         )
+
+
+
+        if (gamepad1.right_trigger > 0.5) {
+            schedule(shootCommand)
+        }
+        else {
+            CommandScheduler.getInstance().cancel(shootCommand)
+        }
 
         telemetry.update()
     }

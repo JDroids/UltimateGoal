@@ -12,8 +12,8 @@ import org.firstinspires.ftc.teamcode.command.SetWobblePivotPosition
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive
 import org.firstinspires.ftc.teamcode.subsystems.WobbleClaw
 
-@Autonomous(group = "1")
-class SingleWobbleAuto : CommandOpMode() {
+@Autonomous(group = "2")
+class OldSingleWobbleAuto : CommandOpMode() {
     lateinit var mecanumDrive: SampleMecanumDrive
     lateinit var detector: UGRectDetector
     lateinit var stackHeight: UGRectDetector.Stack

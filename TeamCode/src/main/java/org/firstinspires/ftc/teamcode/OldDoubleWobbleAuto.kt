@@ -13,8 +13,8 @@ import org.firstinspires.ftc.teamcode.subsystems.WobbleClaw
 import java.util.function.BooleanSupplier
 import java.util.function.Consumer
 
-@Autonomous(group = "1")
-class DoubleWobbleAuto : CommandOpMode() {
+@Autonomous(group = "2")
+class OldDoubleWobbleAuto : CommandOpMode() {
     lateinit var mecanumDrive: SampleMecanumDrive
     lateinit var detector: UGRectDetector
     lateinit var stackHeight: UGRectDetector.Stack
