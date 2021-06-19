@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.arcrobotics.ftclib.command.CommandOpMode
+import com.arcrobotics.ftclib.command.InstantCommand
 import com.arcrobotics.ftclib.command.SequentialCommandGroup
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.Disabled
@@ -11,9 +12,8 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive
 import org.firstinspires.ftc.teamcode.subsystems.Shooter
 import org.firstinspires.ftc.teamcode.subsystems.WobbleClaw
 
-@Disabled
 @Autonomous(group="1")
-class SingleWobbleShootingAuto : CommandOpMode() {
+class RedSingleWobbleParkAuto : CommandOpMode() {
     lateinit var mecanumDrive: SampleMecanumDrive
 
     lateinit var detector: UGRectDetector
@@ -26,13 +26,13 @@ class SingleWobbleShootingAuto : CommandOpMode() {
         wobbleClaw.close()
 
         mecanumDrive = SampleMecanumDrive(hardwareMap)
-        mecanumDrive.poseEstimate = Pose2d(-63.0, -39.0, Math.PI)
+        mecanumDrive.poseEstimate = Pose2d(-63.0, -53.0, Math.PI)
 
         detector = UGRectDetector(hardwareMap)
         detector.init()
 
-        detector.setTopRectangle(0.52, 0.52)
-        detector.setBottomRectangle(0.57, 0.52)
+        detector.setTopRectangle(0.63, 0.1)
+        detector.setBottomRectangle(0.7, 0.1)
         detector.setRectangleSize(20, 10)
         detector.setThreshold(25)
 
@@ -65,33 +65,24 @@ class SingleWobbleShootingAuto : CommandOpMode() {
                     // position B
                     UGRectDetector.Stack.ONE -> FollowTrajectory(mecanumDrive) {
                         mecanumDrive.trajectoryBuilder(true)
-                                .splineTo(Vector2d(24.0, -36.0), 0.0)
+                                .splineTo(Vector2d(24.0, -33.0), 0.0)
                     }
 
                     // position C
                     UGRectDetector.Stack.FOUR -> FollowTrajectory(mecanumDrive) {
                         mecanumDrive.trajectoryBuilder(true)
-                                .splineTo(Vector2d(48.0, -46.0), 0.0)
+                                .splineTo(Vector2d(48.0, -57.0), 0.0)
                     }
                 },
+
                 SetWobblePivotPosition(wobbleClaw, WobbleClaw.PivotPosition.DOWN),
 
                 wobbleClaw.instant { wobbleClaw.open() },
 
-                // Drive to shooting position
-                FollowTrajectory(mecanumDrive) {
-                    mecanumDrive.trajectoryBuilder()
-                            .splineTo(Vector2d(-4.0, -48.0), 0.0) // x was -1 for 3 midshots
-                },
-                TurnToCommand(mecanumDrive, Math.toRadians(-5.0)),
-
-                // Shoot
-                ShootCommand(shooter),
-
                 // Park
                 FollowTrajectory(mecanumDrive) {
                     mecanumDrive.trajectoryBuilder()
-                            .forward(12.0)
+                            .splineTo(Vector2d(8.0, -57.0), 0.0)
                 }
         ))
     }

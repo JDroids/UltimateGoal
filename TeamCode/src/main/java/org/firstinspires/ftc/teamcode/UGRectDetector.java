@@ -38,7 +38,7 @@ public class UGRectDetector {
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                camera.startStreaming(320, 240, OpenCvCameraRotation.SIDEWAYS_LEFT);
+                camera.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
                 // camera.setFlashlightEnabled(true);
             }
         });
@@ -60,9 +60,9 @@ public class UGRectDetector {
     }
 
     public Stack getStack() {
-        if (Math.abs(ftclibPipeline.getTopAverage() - ftclibPipeline.getBottomAverage()) < ftclibPipeline.getThreshold() && (ftclibPipeline.getTopAverage() <= 110 && ftclibPipeline.getBottomAverage() <= 110)) {
+        if (Math.abs(ftclibPipeline.getTopAverage() - ftclibPipeline.getBottomAverage()) < ftclibPipeline.getThreshold() && (ftclibPipeline.getTopAverage() <= 113 && ftclibPipeline.getBottomAverage() <= 113)) {
             return Stack.FOUR;
-        } else if (Math.abs(ftclibPipeline.getTopAverage() - ftclibPipeline.getBottomAverage()) < ftclibPipeline.getThreshold() && (ftclibPipeline.getTopAverage() >= 110 && ftclibPipeline.getBottomAverage() >= 110)) {
+        } else if (Math.abs(ftclibPipeline.getTopAverage() - ftclibPipeline.getBottomAverage()) < ftclibPipeline.getThreshold() && (ftclibPipeline.getTopAverage() >= 113 && ftclibPipeline.getBottomAverage() >= 113)) {
             return Stack.ZERO;
         } else {
             return Stack.ONE;
